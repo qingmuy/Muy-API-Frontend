@@ -15,6 +15,7 @@ import { Button, Drawer, Input, message } from 'antd';
 import React, { useRef, useState } from 'react';
 import type { FormValueType } from './components/UpdateForm';
 import UpdateForm from './components/UpdateForm';
+import { listInterfaceUsingPost } from '@/services/Muy-API-Backend/interfaceInfoController';
 
 /**
  * @en-US Add node
@@ -104,23 +105,16 @@ const TableList: React.FC = () => {
    * @zh-CN 国际化配置
    * */
 
-  const columns: ProColumns<API.RuleListItem>[] = [
+  const columns: ProColumns<API.InterfaceInfo>[] = [
     {
-      title: '规则名称',
+      title: 'id',
+      dataIndex: 'id',
+      valueType: 'index',
+    },
+    {
+      title: '接口名称',
       dataIndex: 'name',
-      tip: 'The rule name is the unique key',
-      render: (dom, entity) => {
-        return (
-          <a
-            onClick={() => {
-              setCurrentRow(entity);
-              setShowDetail(true);
-            }}
-          >
-            {dom}
-          </a>
-        );
-      },
+      valueType: 'text'
     },
     {
       title: '描述',
@@ -128,11 +122,24 @@ const TableList: React.FC = () => {
       valueType: 'textarea',
     },
     {
-      title: '服务调用次数',
-      dataIndex: 'callNo',
-      sorter: true,
-      hideInForm: true,
-      renderText: (val: string) => `${val}${'万'}`,
+      title: '请求方法',
+      dataIndex: 'method',
+      valueType: 'text',
+    },
+    {
+      title: 'url',
+      dataIndex: '接口地址',
+      valueType: 'text',
+    },
+    {
+      title: '请求头',
+      dataIndex: 'requestHeader',
+      valueType: 'textarea',
+    },
+    {
+      title: '响应头',
+      dataIndex: 'responseHeader',
+      valueType: 'textarea',
     },
     {
       title: '状态',
@@ -144,23 +151,25 @@ const TableList: React.FC = () => {
           status: 'Default',
         },
         1: {
-          text: '运行中',
+          text: '开启',
           status: 'Processing',
-        },
-        2: {
-          text: '已上线',
-          status: 'Success',
-        },
-        3: {
-          text: '异常',
-          status: 'Error',
-        },
+        }
       },
     },
     {
-      title: '上次调度时间',
+      title: '创建时间',
+      dataIndex: 'createTime',
+      valueType: 'dateTime',
+    },
+    {
+      title: '更新时间',
+      dataIndex: 'updateTime',
+      valueType: 'dateTime',
+    },
+    {
+      title: '操作',
       sorter: true,
-      dataIndex: 'updatedAt',
+      dataIndex: 'createTime',
       valueType: 'dateTime',
       renderFormItem: (item, { defaultRender, ...rest }, form) => {
         const status = form.getFieldValue('status');
@@ -213,7 +222,23 @@ const TableList: React.FC = () => {
             <PlusOutlined /> 新建
           </Button>,
         ]}
-        request={rule}
+        request={async (params, sort, filter) => {
+          const sortField = Object.keys(sort)?.[0];
+          const sortOrder = sort?.[sortField] ?? undefined;
+
+          const { data, code } = await listInterfaceUsingPost({
+            ...params,
+            sortField,
+            sortOrder,
+            ...filter,
+          } as API.InterfaceInfoQueryRequest);
+
+          return {
+            success: code === 0,
+            data: data?.records || [],
+            total: Number(data?.total) || 0,
+          };
+        }}
         columns={columns}
         rowSelection={{
           onChange: (_, selectedRows) => {

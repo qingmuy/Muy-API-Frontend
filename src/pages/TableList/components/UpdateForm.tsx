@@ -32,7 +32,7 @@ const UpdateForm: React.FC<UpdateFormProps> = (props) => {
         return (
           <Modal
             width={640}
-            bodyStyle={{
+            styles={{
               padding: '32px 40px 48px',
             }}
             destroyOnClose
