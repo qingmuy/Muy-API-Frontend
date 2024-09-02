@@ -113,10 +113,10 @@ const Login: React.FC = () => {
         });
 
         // 跳转首页
-        // window.location.href="/";
+        window.location.href="/";
         // const urlParams = new URL(window.location.href).searchParams;
         // history.push(urlParams.get('redirect') || '/');
-        history.push("/");
+        /*history.push("/");*/
         return;
       }
     } catch (error) {
