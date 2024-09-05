@@ -12,10 +12,10 @@ import React, { useRef, useState } from 'react';
 import UpdateModal from './components/UpdateModal';
 import {
   addInterfaceUsingPost, deleteInterfaceUsingPost,
-  listInterfaceUsingPost,
+  listInterfaceUsingPost, offlineInterfaceUsingPost, onlineInterfaceUsingPost,
   updateInterfaceUsingPost,
 } from '@/services/Muy-API-Backend/interfaceInfoController';
-import CreateModal from '@/pages/interfaceInfo/components/CreateModal';
+import CreateModal from '@/pages/Admin/interfaceInfo/components/CreateModal';
 
 
 
@@ -80,6 +80,52 @@ const TableList: React.FC = () => {
   };
 
   /**
+   * 上线接口
+   *
+   * @param record
+   */
+  const handleOnline = async (record: API.IdRequest) => {
+    const hide = message.loading('发布中');
+    if (!record) return true;
+    try {
+      await onlineInterfaceUsingPost({
+        id: record.id
+      });
+      hide();
+      message.success('发布成功');
+      actionRef.current?.reload();
+      return true;
+    } catch (error: any) {
+      hide();
+      message.error('发布失败，' + error.message);
+      return false;
+    }
+  };
+
+  /**
+   * 下线接口
+   *
+   * @param record
+   */
+  const handleOffline = async (record: API.IdRequest) => {
+    const hide = message.loading('下线中');
+    if (!record) return true;
+    try {
+      await offlineInterfaceUsingPost({
+        id: record.id
+      });
+      hide();
+      message.success('下线成功');
+      actionRef.current?.reload();
+      return true;
+    } catch (error: any) {
+      hide();
+      message.error('下线失败，' + error.message);
+      return false;
+    }
+  };
+
+  /**
    *  Delete node
    * @zh-CN 删除节点
    *
@@ -119,11 +165,13 @@ const TableList: React.FC = () => {
       dataIndex: 'name',
       valueType: 'text',
       formItemProps: {
-        rules: [{
-          required: true,
-          message: '请输入接口名称'
-        }]
-      }
+        rules: [
+          {
+            required: true,
+            message: '请输入接口名称',
+          },
+        ],
+      },
     },
     {
       title: '描述',
@@ -162,20 +210,20 @@ const TableList: React.FC = () => {
         1: {
           text: '开启',
           status: 'Processing',
-        }
+        },
       },
     },
     {
       title: '创建时间',
       dataIndex: 'createTime',
       valueType: 'dateTime',
-      hideInForm: true
+      hideInForm: true,
     },
     {
       title: '更新时间',
       dataIndex: 'updateTime',
       valueType: 'dateTime',
-      hideInForm: true
+      hideInForm: true,
     },
     {
       title: '操作',
@@ -192,14 +240,32 @@ const TableList: React.FC = () => {
         >
           修改
         </a>,
-        <a
+        record.status === 0 ? <a
+            key="config"
+            onClick={() => {
+              handleOnline(record);
+            }}
+          >
+            发布
+        </a> : null,
+        record.status === 1 ? <a
+            key="config"
+            onClick={() => {
+              handleOffline(record);
+            }}
+          >
+            下线
+        </a> : null,
+        <Button
+          type="text"
+          danger
           key="config"
           onClick={() => {
             handleRemove(record);
           }}
         >
           删除
-        </a>
+        </Button>,
       ],
     },
   ];
