@@ -14,6 +14,14 @@ export async function addUserUsingPost(body: API.UserAddRequest, options?: { [ke
   });
 }
 
+/** getNewAccessKeyAndSecretKey POST /api/user/changeaksk */
+export async function getNewAccessKeyAndSecretKeyUsingPost(options?: { [key: string]: any }) {
+  return request<API.BaseResponseUserAKSKVO_>('/api/user/changeaksk', {
+    method: 'POST',
+    ...(options || {}),
+  });
+}
+
 /** deleteUser POST /api/user/delete */
 export async function deleteUserUsingPost(
   body: API.DeleteRequest,

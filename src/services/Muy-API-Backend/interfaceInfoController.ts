@@ -7,7 +7,7 @@ export async function addInterfaceUsingPost(
   body: API.InterfaceInfoAddRequest,
   options?: { [key: string]: any },
 ) {
-  return request<API.BaseResponseString_>('/api/interfaceInfo/add', {
+  return request<API.BaseResponseLong_>('/api/interfaceInfo/add', {
     method: 'POST',
     headers: {
       'Content-Type': 'application/json',
@@ -61,12 +61,12 @@ export async function invokeInterfaceUsingPost(
   });
 }
 
-/** 查询 POST /api/interfaceInfo/list */
+/** 查询 POST /api/interfaceInfo/list/page */
 export async function listInterfaceUsingPost(
   body: API.InterfaceInfoQueryRequest,
   options?: { [key: string]: any },
 ) {
-  return request<API.BaseResponsePageInterfaceInfo_>('/api/interfaceInfo/list', {
+  return request<API.BaseResponsePageInterfaceInfo_>('/api/interfaceInfo/list/page', {
     method: 'POST',
     headers: {
       'Content-Type': 'application/json',
